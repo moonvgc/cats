@@ -19,31 +19,63 @@
             object-fit: contain;
             background: black;
         }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: black;
+            color: white;
+            font-family: sans-serif;
+            font-size: 1.2em;
+            z-index: 10;
+        }
+
+        #loading.hidden,
+        #overlay.hidden {
+            display: none;
+        }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: black;
+            color: white;
+            font-family: sans-serif;
+            font-size: 1.5em;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
 
-<video id="video" autoplay muted controls>
-    <source src="1.mp4" type="video/mp4">
-    Dein Browser unterstützt keine Videos.
-</video>
+<div id="loading">Loading</div>
+<div id="overlay" class="hidden">Click</div>
 
-<audio id="audio">
-    <source src="1.mp3" type="audio/mpeg">
-</audio>
+<video id="video" controls preload="auto" playsinline>
+    <source src="1.mp4" type="video/mp4">
+</video>
 
 <script>
 const video = document.getElementById("video");
-const audio = document.getElementById("audio");
+const loading = document.getElementById("loading");
+const overlay = document.getElementById("overlay");
 
-function startMedia() {
-    video.play().catch(() => {});
-    audio.play().catch(() => {});
-}
+video.addEventListener("canplaythrough", () => {
+    loading.classList.add("hidden");
+    overlay.classList.remove("hidden");
+});
 
-startMedia();
-
-function fullscreen() {
+function playMedia() {
+    overlay.classList.add("hidden");
+    video.play();
     if (video.requestFullscreen) {
         video.requestFullscreen();
     } else if (video.webkitRequestFullscreen) {
@@ -53,12 +85,7 @@ function fullscreen() {
     }
 }
 
-video.addEventListener("loadeddata", fullscreen);
-
-document.addEventListener("click", () => {
-    fullscreen();
-    startMedia();
-}, { once: true });
+overlay.addEventListener("click", playMedia, { once: true });
 </script>
 
 </body>
